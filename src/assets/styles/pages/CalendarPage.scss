@@ -1,0 +1,62 @@
+.CalendarPage {
+  display: grid;
+  grid-template-columns: 5fr 4fr;
+
+  & > * {
+    padding: 30px;
+    display: grid;
+    grid-template-rows: auto 1fr;
+    gap: 30px;
+
+    height: calc(100vh - 60px);
+  }
+
+  &-subscribes {
+    border-left: 1px solid var(--contrast2-color);
+
+    &-list {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+  
+      overflow-y: auto;
+      padding-right: 10px;
+  
+      .MovieCard {
+        width: 175px;
+        margin: 10px 5px;
+      }
+    } 
+  }
+
+  &-scheduleList {
+    overflow-y: auto;
+
+    &-separator {
+      display: flex;
+      align-items: center;
+      justify-content: stretch;
+
+      color: var(--contrast2-color);
+      margin: 5px 0 20px 0;
+
+      position: relative;
+
+      span {
+        margin: 0 30px;
+      }
+
+      &::before {
+        content: "";
+        display: block;
+        border: 1px solid var(--contrast2-color);
+        width: 100%;
+      }
+
+      &-scroll {
+        position: absolute;
+        top: -125px;
+      }
+    }
+  }
+}

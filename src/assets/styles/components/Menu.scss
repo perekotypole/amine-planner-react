@@ -1,0 +1,32 @@
+.MenuItem {
+  display: grid;
+  padding: .2em 0;
+  grid-template-columns: auto 1fr;
+  align-items: center;
+  gap: 1.5em;
+
+  font-weight: 900;
+  color: var(--main3-color);
+  text-decoration: none;
+
+  &-icon {
+    width: 1.9em; height: 2em;
+
+    img {
+      width: 100%; height: 100%;
+      object-fit: contain;
+      filter: invert(47%);
+    }
+  }
+
+  &:hover,
+  &.active {
+    color: var(--contrast1-color);
+    
+    .MenuItem-icon {
+      img {
+        filter: invert(100%);
+      }
+    }
+  }
+}

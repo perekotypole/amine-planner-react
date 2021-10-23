@@ -1,0 +1,96 @@
+.App {
+  display: grid;
+  grid-template-columns: 320px 1fr;
+  height: 100%; width: 100%;
+  
+  &-menu {
+    padding: 30px;
+    background-color: var(--main2-color);
+
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+    gap: 30px;
+
+    .ProfileHead {
+      
+      .ProfileHead-images {
+        margin: -30px;
+        margin-bottom: 0;
+      }
+    }
+
+    &-list {
+      display: grid;
+      height: fit-content;
+      gap: 15px;
+    }
+  }
+
+  &-content {
+    padding: 30px;
+    height: 100vh;
+    overflow-y: auto;
+  }
+}
+
+.Input {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  width: 100%;
+  border-radius: 25px;
+  background-color: var(--main2-color);
+  padding: .7em 1.6em;
+
+  font-size: var(--small-font-size);
+  font-weight: 700;
+  
+  position: relative;
+
+  &-icon {
+    width: 20px; height: 20px;
+    margin: -.5em 0;
+    margin-right: -.3em;
+
+    img {
+      width: 100%; height: 100%;
+      object-fit: contain;
+    }
+  }
+  
+  input {
+    background-color: var(--main2-color);
+    width: 100%;
+    color: var(--contrast1-color);
+    z-index: 1;
+
+    font-weight: inherit;
+    font-size: inherit;
+
+    &:focus {
+      outline: unset;
+
+      ~.Input-focus {
+        visibility: visible;
+      }
+    }
+
+    &::placeholder {
+      color: var(--main3-color);
+    }
+  }
+
+  .Input-focus {
+    visibility: hidden;
+
+    position: absolute;
+    z-index: 0;
+    width: 100%; height: 100%;
+    left: 0; top: 0;
+    border-radius: 25px;
+
+    -webkit-box-shadow: 0px 0px 15px -5px var(--contrast2-color); 
+    box-shadow: 0px 0px 15px -5px var(--contrast2-color);
+  }
+}
