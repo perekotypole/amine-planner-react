@@ -1,4 +1,3 @@
-/* eslint-disable react/jsx-props-no-spreading */
 import PropTypes from 'prop-types'
 import { Droppable, Draggable } from 'react-beautiful-dnd'
 
@@ -6,34 +5,35 @@ import MovieItem from './MovieItem'
 import '../../assets/styles/components/Movies.scss'
 
 const MovieListDND = ({
-  name, movieList,
+  name, movieList, prefix,
 }) => (
-  <div className="MovieList">
-    {name && (
-      <div className="MovieList-name">
-        {name}
-        {' '}
-        <span className="quality">
-          (
-          {movieList.length}
-          )
-        </span>
-      </div>
-    )}
+  <Droppable droppableId={prefix}>
+    {(provided) => (
+      <div className="MovieList">
+        {name && (
+        <div className="MovieList-name">
+          {name}
+          {' '}
+          <span className="quality">
+            (
+            {movieList.length}
+            )
+          </span>
+        </div>
+        )}
 
-    {movieList.length
-      ? (
-        <Droppable droppableId="list">
-          {(provided) => (
+        {movieList.length
+          ? (
             <div className="MovieList-items" {...provided.droppableProps} ref={provided.innerRef}>
               {movieList.map(
                 (item, index) => (
                   <Draggable key={item.id} draggableId={item.id.toString()} index={index}>
-                    {(provided1) => (
+                    {(innerProvided, snapshot) => (
                       <div
-                        ref={provided1.innerRef}
-                        {...provided1.draggableProps}
-                        {...provided1.dragHandleProps}
+                        ref={innerProvided.innerRef}
+                        snapshot={snapshot}
+                        {...innerProvided.draggableProps}
+                        {...innerProvided.dragHandleProps}
                       >
                         <MovieItem
                           name={item.name}
@@ -46,16 +46,18 @@ const MovieListDND = ({
                   </Draggable>
                 ),
               )}
+              {provided.placeholder}
+            </div>
+          )
+          : (
+            <div className="MovieList-empty" ref={provided.innerRef}>
+              <span>Список поки що пустує</span>
+              {provided.placeholder}
             </div>
           )}
-        </Droppable>
-      )
-      : (
-        <div className="MovieList-empty">
-          <span>Список поки що пустує</span>
-        </div>
-      )}
-  </div>
+      </div>
+    )}
+  </Droppable>
 )
 
 MovieListDND.defaultProps = {
@@ -66,6 +68,7 @@ MovieListDND.defaultProps = {
 MovieListDND.propTypes = {
   name: PropTypes.string,
   movieList: PropTypes.arrayOf(PropTypes.object),
+  prefix: PropTypes.string.isRequired,
 }
 
 export default MovieListDND

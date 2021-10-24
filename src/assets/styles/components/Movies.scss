@@ -112,14 +112,14 @@
 }
 
 .MovieList {
-  overflow: hidden;
+  // overflow: hidden;
 
   &-items {
-    overflow-y: auto;
-    height: calc(100% - 2em);
+    // overflow-y: auto;
+    height: calc(100% - 3em);
     padding-right: 10px;
 
-    .MovieItem {
+    & > div {
       margin-bottom: 15px;
     }
   }
@@ -149,6 +149,42 @@
       font-size: var(--small-font-size);
       color: var(--contrast2-color);
       font-weight: 700;
+    }
+  }
+}
+
+.MoviesBoard {
+  display: grid;
+  grid-auto-flow: column;
+  grid-template-columns: repeat(3, 1fr);
+
+  height: 100%;
+  
+  &-column {
+    padding: 30px;
+    overflow: hidden;
+
+    display: grid;
+
+    &:first-of-type {
+      border-right: 1px solid var(--contrast2-color);
+    }
+
+    &:last-of-type {
+      border-left: 1px solid var(--contrast2-color);
+    }
+
+    &:nth-last-of-type(-n+2) {
+      & > div {
+        &:first-of-type {
+          padding-bottom: 30px;
+          border-bottom: 1px solid var(--contrast2-color);
+        }
+
+        &:last-of-type {
+          padding-top: 30px;
+        }
+      }
     }
   }
 }

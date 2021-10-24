@@ -26,6 +26,7 @@
         "quotes": [2, "single", { "avoidEscape": true }],
         "react/destructuring-assignment": "off",
         "no-nested-ternary": "off",
-        "no-continue": "off"
+        "no-continue": "off",
+        "react/jsx-props-no-spreading": [0, { "html": "ignore" }]
     }
 }
