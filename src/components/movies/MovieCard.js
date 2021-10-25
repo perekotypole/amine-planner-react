@@ -1,11 +1,14 @@
 import PropTypes from 'prop-types'
 import '../../assets/styles/components/Movies.scss'
+
 import checkIcon from '../../assets/images/icons/check.svg'
+import addIcon from '../../assets/images/icons/add.svg'
+import deleteIcon from '../../assets/images/icons/delete.svg'
 
 const MovieCard = ({
-  name, background, checked,
+  name, background, checked, changeable,
 }) => (
-  <div className="MovieCard">
+  <div className={`MovieCard ${changeable && 'MovieCard-changeable'}`}>
     <div className="MovieCard-content">
       <div className="MovieCard-background">
         <img src={background} alt={name} />
@@ -24,18 +27,41 @@ const MovieCard = ({
           />
         </div>
       </div>
+
+      <div className="MovieCard-foreground">
+        { checked
+          ? (
+            <div>
+              <div className="MovieCard-foreground-icon MovieCard-foreground-icon-cross">
+                <img src={deleteIcon} alt="unsubscribe" />
+              </div>
+
+              <span>Відписатись</span>
+            </div>
+          )
+          : (
+            <div>
+              <div className="MovieCard-foreground-icon MovieCard-foreground-icon-plus">
+                <img src={addIcon} alt="subscribe" />
+              </div>
+              <span>Додати</span>
+            </div>
+          )}
+      </div>
     </div>
   </div>
 )
 
 MovieCard.defaultProps = {
   checked: false,
+  changeable: false,
 }
 
 MovieCard.propTypes = {
   name: PropTypes.string.isRequired,
   background: PropTypes.string.isRequired,
   checked: PropTypes.bool,
+  changeable: PropTypes.bool,
 }
 
 export default MovieCard

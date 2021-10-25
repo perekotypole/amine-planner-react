@@ -4,50 +4,9 @@ import ProfileHead from '../components/profile/ProfileHead'
 import MovieCard from '../components/movies/MovieCard'
 import MovieList from '../components/movies/MovieList'
 
-import Jojo from '../assets/images/jojo.jpg'
-
-const movieList = [
-  {
-    name: 'Неймовірні пригоди ДжоДжо',
-    background: Jojo,
-  },
-  {
-    name: 'Неймовірні пригоди ДжоДжо',
-    background: Jojo,
-  },
-  {
-    name: 'Убивая слизней 300 лет, сама того не заметив, я достигла максимального уровня',
-    background: Jojo,
-  },
-  {
-    name: 'Неймовірні пригоди ДжоДжо',
-    background: Jojo,
-  },
-  {
-    name: 'Неймовірні пригоди ДжоДжо',
-    background: Jojo,
-  },
-  {
-    name: 'Убивая слизней 300 лет, сама того не заметив, я достигла максимального уровня',
-    background: Jojo,
-  },
-  {
-    name: 'Неймовірні пригоди ДжоДжо',
-    background: Jojo,
-  },
-  {
-    name: 'Неймовірні пригоди ДжоДжо',
-    background: Jojo,
-  },
-  {
-    name: 'Убивая слизней 300 лет, сама того не заметив, я достигла максимального уровня',
-    background: Jojo,
-  },
-  {
-    name: 'Неймовірні пригоди ДжоДжо',
-    background: Jojo,
-  },
-]
+import schedule from '../assets/data/schedule'
+import movieList from '../assets/data/moviesList'
+import planner from '../assets/data/plannerList'
 
 const HomePage = () => (
   <div className="HomePage">
@@ -69,9 +28,9 @@ const HomePage = () => (
     </div>
 
     <div className="HomePage-dashboard">
-      <Calendar />
+      <Calendar data={schedule} />
 
-      <MovieList name="В планах" movieList={movieList} />
+      <MovieList name="В планах" movieList={planner.plans} />
     </div>
   </div>
 )

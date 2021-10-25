@@ -5,81 +5,8 @@ import MovieCard from '../components/movies/MovieCard'
 import MovieList from '../components/movies/MovieList'
 import Input from '../components/Input'
 
-import Jojo from '../assets/images/jojo.jpg'
-
-const movieList = [
-  {
-    name: 'Неймовірні пригоди ДжоДжо',
-    background: Jojo,
-    checked: true,
-  },
-  {
-    name: 'Неймовірні пригоди ДжоДжо',
-    background: Jojo,
-  },
-  {
-    name: 'Убивая слизней 300 лет, сама того не заметив, я достигла максимального уровня',
-    background: Jojo,
-  },
-  {
-    name: 'Неймовірні пригоди ДжоДжо',
-    background: Jojo,
-    checked: true,
-  },
-  {
-    name: 'Неймовірні пригоди ДжоДжо',
-    background: Jojo,
-    checked: true,
-  },
-  {
-    name: 'Убивая слизней 300 лет, сама того не заметив, я достигла максимального уровня',
-    background: Jojo,
-  },
-  {
-    name: 'Неймовірні пригоди ДжоДжо',
-    background: Jojo,
-    checked: true,
-  },
-  {
-    name: 'Неймовірні пригоди ДжоДжо',
-    background: Jojo,
-  },
-  {
-    name: 'Убивая слизней 300 лет, сама того не заметив, я достигла максимального уровня',
-    background: Jojo,
-  },
-  {
-    name: 'Неймовірні пригоди ДжоДжо',
-    background: Jojo,
-  },
-]
-
-const schedule = [
-  {
-    date: Date.parse('2021-10-01'),
-    name: 'Jojo',
-    episode: '2 сезон, 12 серія',
-    background: Jojo,
-  },
-  {
-    date: Date.parse('2021-10-10'),
-    name: 'Jojo',
-    episode: '2 сезон, 12 серія',
-    background: Jojo,
-  },
-  {
-    date: Date.parse('2021-10-21'),
-    name: 'Jojo',
-    episode: '2 сезон, 12 серія',
-    background: Jojo,
-  },
-  {
-    date: Date.parse('2021-10-22'),
-    name: 'Jojo',
-    episode: '2 сезон, 12 серія',
-    background: Jojo,
-  },
-]
+import schedule from '../assets/data/schedule'
+import movieList from '../assets/data/moviesList'
 
 const today = new Date()
 today.setHours(0, 0, 0, 0)
@@ -100,7 +27,7 @@ const CalendarPage = () => {
   return (
     <div className="CalendarPage">
       <div className="CalendarPage-calendar">
-        <Calendar />
+        <Calendar data={schedule} />
 
         <div className="CalendarPage-scheduleList">
           <MovieList movieList={past} />
@@ -125,6 +52,7 @@ const CalendarPage = () => {
                 name={name}
                 background={background}
                 checked={checked}
+                changeable
               />
             ),
           )}

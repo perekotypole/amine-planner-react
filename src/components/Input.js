@@ -3,7 +3,7 @@ import '../assets/styles/App.scss'
 
 import SearchIcon from '../assets/images/icons/search.svg'
 
-const MenuItem = ({
+const Input = ({
   placeholder,
   type,
 }) => (
@@ -19,14 +19,14 @@ const MenuItem = ({
   </div>
 )
 
-MenuItem.propTypes = {
+Input.propTypes = {
   placeholder: PropTypes.string,
   type: PropTypes.string,
 }
 
-MenuItem.defaultProps = {
+Input.defaultProps = {
   placeholder: '',
   type: null,
 }
 
-export default MenuItem
+export default Input

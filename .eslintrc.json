@@ -27,6 +27,12 @@
         "react/destructuring-assignment": "off",
         "no-nested-ternary": "off",
         "no-continue": "off",
-        "react/jsx-props-no-spreading": [0, { "html": "ignore" }]
+        "react/jsx-props-no-spreading": [0, { "html": "ignore" }],
+        "react/button-has-type": "off",
+        "jsx-a11y/label-has-associated-control": ["error", {
+            "required": {
+              "some": ["nesting", "id"]
+            }
+          }]
     }
 }

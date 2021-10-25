@@ -3,45 +3,7 @@ import '../../assets/styles/components/Movies.scss'
 import { DragDropContext } from 'react-beautiful-dnd'
 import MovieListDND from './MovieListDND'
 
-import Jojo from '../../assets/images/jojo.jpg'
-
-const movieList = {
-  plans: [
-    {
-      id: 1,
-      name: 'Неймовірні пригоди ДжоДжо',
-      background: Jojo,
-      checked: true,
-    },
-    {
-      id: 2,
-      name: 'Неймовірні пригоди ДжоДжо',
-      background: Jojo,
-    },
-  ],
-  watching: [
-    {
-      id: 3,
-      name: 'Убивая слизней 300 лет, сама того не заметив, я достигла максимального уровня',
-      background: Jojo,
-    },
-    {
-      id: 4,
-      name: 'Неймовірні пригоди ДжоДжо',
-      background: Jojo,
-      checked: true,
-    },
-    {
-      id: 5,
-      name: 'Неймовірні пригоди ДжоДжо',
-      background: Jojo,
-      checked: true,
-    },
-  ],
-  awaiting: [],
-  finished: [],
-  left: [],
-}
+import movieList from '../../assets/data/plannerList'
 
 const removeFromList = (list, index) => {
   const result = Array.from(list)

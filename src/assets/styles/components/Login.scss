@@ -1,0 +1,56 @@
+.Login, .Registration {
+  width: 100%;
+  max-width: 550px;
+  font-size: var(--medium-font-size);
+  
+  &-header {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+
+    h1 {
+      font-size: var(--large-font-size);
+      font-weight: 900;
+      color: var(--contrast2-color);
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+  }
+
+  form {
+    display: grid;
+    gap: 20px;
+    margin: 35px 0;
+
+    .Input {
+      font-size: var(--medium-font-size);
+      font-weight: 900;
+    }
+  }
+
+  &-submit {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  &-google {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+
+    margin-top: 40px;
+
+    span {
+      opacity: 10%;
+      font-size: var(--small-font-size);
+    }
+
+    img {
+      width: 2em; height: 2em;
+    }
+  }
+}

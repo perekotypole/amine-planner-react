@@ -1,34 +1,18 @@
-import React from 'react'
+import React, { Component } from 'react'
 import * as dateFns from 'date-fns'
 import locale from 'date-fns/locale/uk'
+import PropTypes from 'prop-types'
+
 import '../../assets/styles/components/Calendar.scss'
 
 import DayItem from './DayItem'
-import Jojo from '../../assets/images/jojo.jpg'
 
-const schedule = [
-  {
-    date: Date.parse('2021-10-01'),
-    name: 'Jojo',
-    image: Jojo,
-  },
-  {
-    date: Date.parse('2021-10-10'),
-    name: 'Jojo',
-    image: Jojo,
-  },
-  {
-    date: Date.parse('2021-10-21'),
-    name: 'Jojo',
-    image: Jojo,
-  },
-]
-
-class Calendar extends React.Component {
+class Calendar extends Component {
   constructor(props) {
     super(props)
     this.state = {
       currentMonth: new Date(),
+      schedule: props.data,
     }
 
     this.nextMonth = this.nextMonth.bind(this)
@@ -100,10 +84,10 @@ class Calendar extends React.Component {
           let name = ''
           let image = ''
 
-          schedule.forEach((item) => {
+          this.state.schedule.forEach((item) => {
             if (item.date === date) {
               name = item.name
-              image = item.image
+              image = item.background
             }
           })
 
@@ -144,6 +128,14 @@ class Calendar extends React.Component {
       </div>
     )
   }
+}
+
+Calendar.defaultProps = {
+  data: [],
+}
+
+Calendar.propTypes = {
+  data: PropTypes.arrayOf(PropTypes.object),
 }
 
 export default Calendar

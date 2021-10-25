@@ -1,0 +1,25 @@
+.LoginPage {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  height: 100%;
+
+  &-image {
+    height: 100%; width: 100%;
+    overflow: hidden;
+
+    img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+    }
+  }
+
+  &-contentForm {
+    padding: 60px;
+    display: flex;
+    align-items: center;
+
+    & > div {
+      margin: 0 auto;
+    }
+  }
+}
