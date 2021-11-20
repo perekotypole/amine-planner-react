@@ -1,49 +1,34 @@
-import { useState, useEffect } from 'react'
+import { useEffect } from 'react'
 import '../../assets/styles/components/Movies.scss'
 import { DragDropContext } from 'react-beautiful-dnd'
+import { useSelector, useDispatch } from 'react-redux'
+import { updatePlannerData, getPlannerList } from '../../store/movieSlice'
+
 import MovieListDND from './MovieListDND'
 
-import movieList from '../../assets/data/plannerList'
-
-const removeFromList = (list, index) => {
-  const result = Array.from(list)
-  const [removed] = result.splice(index, 1)
-  return [removed, result]
-}
-
-const addToList = (list, index, element) => {
-  const result = Array.from(list)
-  result.splice(index, 0, element)
-  return result
-}
-
 const ListPage = () => {
-  const [list, setElements] = useState(movieList)
+  const list = useSelector((state) => state.movies.planner)
+  const dispatch = useDispatch()
 
   useEffect(() => {
-    setElements(movieList)
+    dispatch(getPlannerList('plans'))
+    dispatch(getPlannerList('watching'))
+    dispatch(getPlannerList('awaiting'))
+    dispatch(getPlannerList('finished'))
+    dispatch(getPlannerList('paused'))
   }, [])
 
   const onDragEnd = (result) => {
     if (!result.destination) {
       return
     }
-    const listCopy = { ...list }
 
-    const sourceList = listCopy[result.source.droppableId]
-    const [removedElement, newSourceList] = removeFromList(
-      sourceList,
-      result.source.index,
-    )
-    listCopy[result.source.droppableId] = newSourceList
-    const destinationList = listCopy[result.destination.droppableId]
-    listCopy[result.destination.droppableId] = addToList(
-      destinationList,
-      result.destination.index,
-      removedElement,
-    )
-
-    setElements(listCopy)
+    dispatch(updatePlannerData({
+      sourceList: result.source.droppableId,
+      destinationList: result.destination.droppableId,
+      removedElementIndex: result.source.index,
+      addedElementIndex: result.destination.index,
+    }))
   }
 
   return (
@@ -60,7 +45,7 @@ const ListPage = () => {
 
         <div className="MoviesBoard-column">
           <MovieListDND name="Закінчено" prefix="finished" movieList={list.finished} />
-          <MovieListDND name="Кинуто" prefix="left" movieList={list.left} />
+          <MovieListDND name="Кинуто" prefix="paused" movieList={list.paused} />
         </div>
       </DragDropContext>
     </div>

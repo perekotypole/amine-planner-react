@@ -6,7 +6,7 @@ const MovieItem = ({
   name, background, date, episode,
 }) => {
   let formatedDate = null
-  if (date) formatedDate = format(date, 'dd/MM/yyyy')
+  if (date) formatedDate = format(new Date(date), 'dd/MM/yyyy')
 
   return (
     <div className="MovieItem">

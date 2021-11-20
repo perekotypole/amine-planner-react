@@ -3,7 +3,7 @@ import MovieItem from './MovieItem'
 import '../../assets/styles/components/Movies.scss'
 
 const MovieList = ({
-  name, movieList,
+  name, movieList, empty,
 }) => (
   <div className="MovieList">
     {name && (
@@ -24,9 +24,9 @@ const MovieList = ({
           {movieList.map(
             (item) => (
               <MovieItem
-                key={item.name}
-                name={item.name}
-                background={item.background}
+                key={item.id}
+                name={item.title}
+                background={item.poster}
                 date={item.date}
                 episode={item.episode}
               />
@@ -34,7 +34,7 @@ const MovieList = ({
           )}
         </div>
       )
-      : (
+      : empty && (
         <div className="MovieList-empty">
           <span>Список поки що пустує</span>
         </div>
@@ -44,11 +44,13 @@ const MovieList = ({
 
 MovieList.defaultProps = {
   movieList: [],
+  empty: false,
 }
 
 MovieList.propTypes = {
   name: PropTypes.string.isRequired,
-  movieList: PropTypes.arrayOf,
+  movieList: PropTypes.arrayOf(PropTypes.object),
+  empty: PropTypes.bool,
 }
 
 export default MovieList

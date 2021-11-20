@@ -36,10 +36,8 @@ const MovieListDND = ({
                         {...innerProvided.dragHandleProps}
                       >
                         <MovieItem
-                          name={item.name}
-                          background={item.background}
-                          date={item.date}
-                          episode={item.episode}
+                          name={item.title}
+                          background={item.poster}
                         />
                       </div>
                     )}

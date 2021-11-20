@@ -29,6 +29,12 @@
       font-size: var(--medium-font-size);
       font-weight: 900;
     }
+
+    .error {
+      color: crimson;
+      opacity: 80%;
+      font-size: .75em;
+    }
   }
 
   &-submit {

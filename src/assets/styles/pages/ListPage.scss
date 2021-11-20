@@ -1,3 +1,121 @@
 .ListPage {
   height: calc(100vh - 60px);
+  display: grid;
+  grid-template-rows: auto 1fr;
+  position: relative;
+
+  &-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    h2 {
+      color: var(--main2-color);
+    }
+  }
+
+  &-search {
+    position: absolute;
+    width: calc(100% + 60px); height: calc(100% + 60px);
+    top: -30px; left: -30px;
+    padding: 40px;
+
+    backdrop-filter: brightness(60%) blur(9px);
+
+    display: grid;
+    grid-template-rows: auto 1fr;
+    gap: 30px;
+
+    &-bar {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 1em;
+
+      button {
+        font-size: var(--small-font-size);
+        background-color: var(--main2-color);
+        color: var(--contrast2-color);
+        border-radius: 1.4em;
+        
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        height: 2.7em; width: 2.7em;
+
+        img {
+          width: 1em; height: 1em;
+        }
+      }
+    }
+
+    &-content {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      overflow: hidden;
+      gap: 20px;
+
+      & > div {
+        padding: 30px;
+      }
+    }
+
+    &-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(175px, 1fr));
+      height: fit-content; max-height: 100%;
+      gap: 20px;
+  
+      overflow-y: auto;
+      padding-right: 10px !important;
+    }
+
+    &-types {
+      border-left: 1px solid var(--contrast2-color);
+
+      .container {
+        display: block;
+        position: relative;
+        width: 200px;
+        padding: 20px 30px;
+        margin-bottom: 20px;
+
+        cursor: pointer;
+        user-select: none;
+
+        .label {
+          position: relative;
+          z-index: 1;
+        }
+
+        input {
+          position: absolute;
+          opacity: 0;
+          cursor: pointer;
+
+          &:checked ~ .checkmark {
+            background-color: var(--contrast2-color);
+          }
+          &:checked ~ .label {
+            color: var(--main1-color);
+          }
+        }
+
+        .checkmark {
+          position: absolute;
+          top: 0; left: 0;
+          height: 100%; width: 100%;
+          background-color: var(--main2-color);
+          border-radius: 25px;
+        }
+
+        &:hover input ~ .checkmark {
+          background-color: var(--contrast2-color);
+        }
+        &:hover input ~ .label {
+          color: var(--main1-color);
+        }
+      }
+    }
+  }
 }

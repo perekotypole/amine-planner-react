@@ -49,15 +49,47 @@
     }
   }
 
+  input[type=text] {
+    background-color: transparent;
+    width: 100%;
+    
+    &:focus {
+      border: 0;
+      outline: none;
+    }
+
+    &[readOnly] {
+      cursor: inherit;
+    }
+
+    &::placeholder {
+      opacity: .2;
+    }
+  }
+
+  input[name=mainPhoto] {
+    position: absolute;
+    display: none;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+  input[name=banner] {
+    position: absolute;
+    visibility: hidden;
+    top: 0;
+  }
+
   &-username {
+    margin-top: 8%;
     text-align: center;
     color: var(--contrast2-color);
-    margin-top: 8%;
     font-size: var(--medium-font-size);
   }
 
   &-status {
     text-align: center;
+    color: inherit;
+    font: inherit;
   }
 
   &-small {
@@ -69,6 +101,22 @@
 
     .ProfileHead-username {
       margin-top: 10%;
+    }
+  }
+
+  &-settings {
+    position: absolute;
+    cursor: pointer; user-select: none;
+    right: 2em; top: 0;
+    margin: 10px;
+    filter: drop-shadow(0 0 5px #000000) drop-shadow(0 0 15px #000000);
+
+    img {
+      width: 1.2em; height: 1.2em;
+    }
+
+    span {
+      margin-right: .5em;
     }
   }
 }

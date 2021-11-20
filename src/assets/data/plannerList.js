@@ -1,39 +1,26 @@
-import Jojo from '../images/jojo.jpg'
-
 export default {
   plans: [
     {
-      id: 1,
-      name: 'Неймовірні пригоди ДжоДжо',
-      background: Jojo,
-      checked: true,
+      id: 31321,
     },
     {
-      id: 2,
-      name: 'Неймовірні пригоди ДжоДжо',
-      background: Jojo,
+      id: 38006,
+    },
+    {
+      id: 'asd',
+      text: 'Для тебе безсмертний',
     },
   ],
   watching: [
     {
-      id: 3,
-      name: 'Убивая слизней 300 лет, сама того не заметив, я достигла максимального уровня',
-      background: Jojo,
-    },
-    {
-      id: 4,
-      name: 'Неймовірні пригоди ДжоДжо',
-      background: Jojo,
-      checked: true,
-    },
-    {
-      id: 5,
-      name: 'Неймовірні пригоди ДжоДжо',
-      background: Jojo,
-      checked: true,
+      id: 229,
     },
   ],
   awaiting: [],
-  finished: [],
-  left: [],
+  finished: [
+    {
+      id: 126,
+    },
+  ],
+  paused: [],
 }
