@@ -1,6 +1,6 @@
 import { Schema, model } from 'mongoose'
 
-export default model('Shedule', new Schema({
+export default model('Planner', new Schema({
   userID: {
     type: Schema.Types.ObjectId,
     required: true,

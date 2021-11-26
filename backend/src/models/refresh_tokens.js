@@ -1,19 +1,21 @@
 import { Schema, model } from 'mongoose'
 
-export default model('Subscribe', new Schema({
+export default model('RefreshToken', new Schema({
   userID: {
     type: Schema.Types.ObjectId,
     required: true,
     ref: 'User',
   },
-  token: {
+  value: {
     type: String,
     required: true,
-    unique: true,
   },
   status: {
     type: String,
-    enum: ['ACTIVE', 'PASSED', 'NONTERM'],
-    default: 'ACTIVE',
+    enum: ['ACTIVE', 'USED', 'NONTERM', 'WITHDRAWN'],
+    default: () => 'ACTIVE',
+  },
+  date_of_used: {
+    type: Date,
   },
 }))

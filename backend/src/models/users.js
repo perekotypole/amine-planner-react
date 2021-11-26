@@ -1,11 +1,6 @@
 import { Schema, model } from 'mongoose'
 
-export default model('Subscribe', new Schema({
-  userID: {
-    type: Number,
-    required: true,
-    unique: true,
-  },
+export default model('User', new Schema({
   username: {
     type: String,
     required: true,
@@ -22,10 +17,14 @@ export default model('Subscribe', new Schema({
   },
   mainPhoto: {
     type: String,
-    required: true,
+    default: () => null,
   },
   banner: {
     type: String,
-    required: true,
+    default: () => null,
+  },
+  status: {
+    type: String,
+    default: () => null,
   },
 }))

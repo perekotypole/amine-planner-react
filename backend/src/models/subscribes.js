@@ -1,6 +1,6 @@
 import { Schema, model } from 'mongoose'
 
-export default model('Subscribe', new Schema({
+export default model('Subscribes', new Schema({
   userID: {
     type: Schema.Types.ObjectId,
     required: true,
@@ -16,4 +16,4 @@ export default model('Subscribe', new Schema({
       default: () => new Date(),
     },
   }],
-}))
+}), 'subscribes')
