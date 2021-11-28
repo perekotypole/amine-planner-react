@@ -6,19 +6,28 @@ import React, { useEffect, useRef, useState } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import '../../assets/styles/components/Profile.scss'
 
+import { setUser, updateUser } from '../../store/authorizationSlice'
+
+import defaultMainPhoto from '../../assets/images/nobara.jpg'
+import defaultBanner from '../../assets/images/banner.jpg'
 import saveIcon from '../../assets/images/icons/save.svg'
-import { setUser } from '../../store/authorizationSlice'
 
 const ProfileHead = ({
   small,
 }) => {
   const dispatch = useDispatch()
+  const user = useSelector((state) => state.authorization.user)
+
+  useEffect(() => {
+    dispatch(setUser())
+  }, [])
+
   const {
     username,
     status,
     mainPhoto,
     banner,
-  } = useSelector((state) => state.authorization.user)
+  } = user
 
   const [changedData, setChangedData] = useState(false)
   const [editUsername, setEditUsername] = useState(username)
@@ -41,7 +50,7 @@ const ProfileHead = ({
       banner: editBanner,
     }
 
-    dispatch(setUser(data))
+    dispatch(updateUser(data))
     setChangedData(false)
   }
 
@@ -87,7 +96,7 @@ const ProfileHead = ({
       <div className="ProfileHead-images">
         <div className="ProfileHead-banner">
           <img
-            src={banner}
+            src={banner || defaultBanner}
             alt="banner"
             onClick={onClickBanner}
             ref={bannerPreviewRef}
@@ -105,7 +114,7 @@ const ProfileHead = ({
         </div>
 
         <div className="ProfileHead-mainPhoto" onClick={onClickMainImage}>
-          <img src={mainPhoto} alt="mainPhoto" ref={mainPhotoPreviewRef} />
+          <img src={mainPhoto || defaultMainPhoto} alt="mainPhoto" ref={mainPhotoPreviewRef} />
         </div>
 
         { !small && (

@@ -11,11 +11,11 @@ const ListPage = () => {
   const dispatch = useDispatch()
 
   useEffect(() => {
-    dispatch(getPlannerList('plans'))
+    dispatch(getPlannerList('plan'))
     dispatch(getPlannerList('watching'))
-    dispatch(getPlannerList('awaiting'))
-    dispatch(getPlannerList('finished'))
-    dispatch(getPlannerList('paused'))
+    dispatch(getPlannerList('onHold'))
+    dispatch(getPlannerList('completed'))
+    dispatch(getPlannerList('dropped'))
   }, [])
 
   const onDragEnd = (result) => {
@@ -35,17 +35,17 @@ const ListPage = () => {
     <div className="MoviesBoard">
       <DragDropContext onDragEnd={onDragEnd}>
         <div className="MoviesBoard-column">
-          <MovieListDND name="В планах" prefix="plans" movieList={list.plans} />
+          <MovieListDND name="В планах" prefix="plan" movieList={list.plan} />
         </div>
 
         <div className="MoviesBoard-column">
           <MovieListDND name="Дивлюсь" prefix="watching" movieList={list.watching} />
-          <MovieListDND name="В очікуванні" prefix="awaiting" movieList={list.awaiting} />
+          <MovieListDND name="В очікуванні" prefix="onHold" movieList={list.onHold} />
         </div>
 
         <div className="MoviesBoard-column">
-          <MovieListDND name="Закінчено" prefix="finished" movieList={list.finished} />
-          <MovieListDND name="Кинуто" prefix="paused" movieList={list.paused} />
+          <MovieListDND name="Закінчено" prefix="completed" movieList={list.completed} />
+          <MovieListDND name="Кинуто" prefix="dropped" movieList={list.dropped} />
         </div>
       </DragDropContext>
     </div>

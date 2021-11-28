@@ -1,5 +1,4 @@
 import React, { useState } from 'react'
-import PropTypes from 'prop-types'
 import { NavLink } from 'react-router-dom'
 import '../../assets/styles/components/Login.scss'
 
@@ -12,7 +11,7 @@ import Checkbox from '../Checkbox'
 
 import GoogleIcon from '../../assets/images/icons/google.svg'
 
-const Registration = ({ getToken }) => {
+const Registration = () => {
   const dispatch = useDispatch()
   const store = useStore()
 
@@ -80,11 +79,9 @@ const Registration = ({ getToken }) => {
       dispatch(setRegistration({
         username, email, password,
       }))
-      const user = store.getState().authorization.userID
+      const { isLoggedIn } = store.getState().authorization
 
-      if (user) {
-        getToken({ token: store.getState().authorization.token })
-      } else {
+      if (!isLoggedIn) {
         setLoginError('Не вдалось ввійти в систему, перевірте дані')
       }
     }
@@ -142,10 +139,6 @@ const Registration = ({ getToken }) => {
       </div>
     </div>
   )
-}
-
-Registration.propTypes = {
-  getToken: PropTypes.func.isRequired,
 }
 
 export default Registration

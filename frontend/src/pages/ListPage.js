@@ -17,7 +17,7 @@ const ListPage = () => {
   const plannerTypes = [
     {
       label: 'В планах',
-      name: 'plans',
+      name: 'plan',
       checked: true,
     },
     {
@@ -26,15 +26,15 @@ const ListPage = () => {
     },
     {
       label: 'Закінчено',
-      name: 'finished',
+      name: 'completed',
     },
     {
       label: 'В очікуванні',
-      name: 'awaiting',
+      name: 'onHold',
     },
     {
       label: 'Кинуто',
-      name: 'paused',
+      name: 'dropped',
     },
   ]
 

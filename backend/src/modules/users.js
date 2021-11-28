@@ -65,4 +65,43 @@ export default (router) => {
       }
     },
   )
+
+  router.post(
+    '/user/get',
+    async (req, res) => {
+      const errors = []
+      errors.push(...validationResult(req).array())
+
+      if (errors.length) {
+        return res.json({ errors })
+      }
+
+      const { userID } = req.user
+
+      try {
+        const user = await Users.findById(userID)
+
+        if (!user) {
+          errors.push({
+            msg: 'User doesn`t exist',
+            param: 'userID',
+            location: 'body',
+          })
+
+          return res.json({ errors })
+        }
+
+        const result = await Users.findById(userID)
+        return res.json({ result })
+      } catch {
+        errors.push({
+          msg: 'Something wrong',
+          param: '',
+          location: 'body',
+        })
+
+        return res.json({ errors })
+      }
+    },
+  )
 }

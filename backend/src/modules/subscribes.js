@@ -68,11 +68,6 @@ export default (router) => {
     '/subscribes/get',
     async (req, res) => {
       const errors = []
-      errors.push(...validationResult(req).array())
-
-      if (errors.length) {
-        return res.json({ errors })
-      }
 
       const { userID } = req.user
       try {

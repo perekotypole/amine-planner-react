@@ -1,9 +1,8 @@
-import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import axios from 'axios'
+import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import { isSameMonth } from 'date-fns'
 
-import plannerData from '../assets/data/plannerList'
-import subscribesData from '../assets/data/subscribes'
+import MoviesService from '../services/movies.service'
 
 const requestGetById = async (id, episodes = false) => {
   const promise = axios.post('https://api.myshows.me/v2/rpc/', {
@@ -63,44 +62,61 @@ const requestSearch = async (query) => {
 export const getSubscribes = createAsyncThunk(
   'movies/getSubscribes',
   async () => {
-    const subscribes = Promise.all(subscribesData.map(({ id }) => requestGetById(id)))
-      .then((elements) => elements)
-    return subscribes
+    const subscribesData = await MoviesService.getSubscribes()
+
+    if (subscribesData.result.list) {
+      const subscribes = Promise.all(subscribesData.result.list
+        .map(({ movieID }) => requestGetById(movieID)))
+        .then((elements) => elements)
+      return subscribes
+    }
+
+    return null
   },
 )
 
 export const getSchedule = createAsyncThunk(
   'movies/getSchedule',
   async (date = new Date()) => {
-    const schedule = Promise.all(subscribesData.map(({ id }) => requestGetById(id, true)))
-      .then((elements) => elements.map((element) => {
-        const episodes = element.episodes.filter(
-          (episode) => isSameMonth(date, new Date(episode.airDate)),
-        )
+    const subscribesData = await MoviesService.getSubscribes()
 
-        const result = episodes.map((episode) => ({
-          ...episode,
-          info: element,
+    if (subscribesData.result.list) {
+      const schedule = Promise.all(subscribesData.result.list
+        .map(({ movieID }) => requestGetById(movieID, true)))
+        .then((elements) => elements.map((element) => {
+          const episodes = element.episodes.filter(
+            (episode) => isSameMonth(date, new Date(episode.airDate)),
+          )
+
+          const result = episodes.map((episode) => ({
+            ...episode,
+            info: element,
+          }))
+          return result
         }))
-        return result
-      }))
-    return schedule
+      return schedule
+    }
+
+    return null
   },
 )
 
 export const getPlannerList = createAsyncThunk(
   'movies/getPlannerList',
   async (list) => {
-    const planner = await Promise.all(plannerData[list].map(({ id, text }) => {
-      if (text) {
-        return ({
-          id,
-          title: text,
-        })
-      }
+    const { result: plannerData } = await MoviesService.getPlanner()
 
-      return requestGetById(id)
-    }))
+    const planner = await Promise.all(plannerData[list]
+      .map(({ _id, movieID, text }) => {
+        if (text) {
+          return ({
+            id: movieID || _id,
+            title: text,
+          })
+        }
+
+        return requestGetById(movieID)
+      }))
       .then((elements) => elements)
 
     return [list, planner]
@@ -111,23 +127,29 @@ export const getSearch = createAsyncThunk(
   'movies/getSearch',
   async (query) => {
     const search = []
+    const subscribesData = await MoviesService.getSubscribes()
 
     if (query.length) {
       const searchResult = await requestSearch(query)
-      const searchPromise = Promise.all(searchResult.map(({ id }) => requestGetById(id)))
-        .then((elements) => elements.map(
-          (item) => {
-            let checked = false
-            subscribesData.forEach(({ id }) => { if (id === item.id) checked = true })
 
-            return {
-              checked,
-              ...item,
-            }
-          },
-        ))
+      if (subscribesData.result.list) {
+        const searchPromise = Promise.all(searchResult.result.list
+          .map(({ movieID }) => requestGetById(movieID)))
+          .then((elements) => elements.map(
+            (item) => {
+              let checked = false
+              subscribesData.forEach(({ id }) => { if (id === item.id) checked = true })
 
-      search.push(...(await searchPromise))
+              return {
+                checked,
+                ...item,
+              }
+            },
+          ))
+        search.push(...(await searchPromise))
+      } else {
+        search.push(...(await searchResult))
+      }
     }
 
     return search
@@ -142,11 +164,11 @@ const movieSlice = createSlice({
     search: [],
     searchStatus: null,
     planner: {
-      plans: [],
+      completed: [],
+      dropped: [],
+      onHold: [],
+      plan: [],
       watching: [],
-      awaiting: [],
-      finished: [],
-      paused: [],
     },
   },
   extraReducers: {

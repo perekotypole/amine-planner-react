@@ -1,106 +1,118 @@
-import { createSlice } from '@reduxjs/toolkit'
-import md5 from 'MD5'
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 
-import banner from '../assets/images/banner.jpg'
-import mainPhoto from '../assets/images/nobara.jpg'
+import AuthService from '../services/auth.service'
+import UserService from '../services/user.service'
 
-const usersList = [
-  {
-    userID: '1',
-    username: 'Perekotypole',
-    status: 'Дуже умний статус',
-    email: 'perekotypole@gmail.com',
-    banner,
-    mainPhoto,
-    password: '5f4dcc3b5aa765d61d8327deb882cf99',
+const tokens = JSON.parse(localStorage.getItem('tokens'))
+
+export const setRegistration = createAsyncThunk(
+  'authorization/setRegistration',
+  async ({ username, email, password }) => {
+    try {
+      const response = await AuthService.register(username, email, password)
+      return response.data
+    } catch (error) {
+      return null
+    }
   },
-]
+)
+export const setLogin = createAsyncThunk(
+  'authorization/setLogin',
+  async ({ username, password }) => {
+    try {
+      const response = await AuthService.login(username, password)
+
+      return response.result
+    } catch (error) {
+      return null
+    }
+  },
+)
+
+export const setLogout = createAsyncThunk('authorization/setLogout', async () => {
+  await AuthService.logout()
+})
+
+export const setUser = createAsyncThunk(
+  'authorization/setUser',
+  async () => {
+    try {
+      let response = await UserService.getUser()
+
+      if (response.accessTokenExpired) {
+        await AuthService.refresh()
+        response = await UserService.getUser()
+      }
+
+      return response.result
+    } catch (error) {
+      return null
+    }
+  },
+)
+
+export const updateUser = createAsyncThunk(
+  'authorization/updateUser',
+  async (user) => {
+    try {
+      let response = null
+      let result = null
+      // eslint-disable-next-line no-extra-boolean-cast
+      if (!!user) {
+        response = await UserService.updateUser(user)
+
+        if (response.accessTokenExpired) {
+          await AuthService.refresh()
+          response = await UserService.updateUser(user)
+        }
+
+        result = await UserService.getUser()
+      }
+
+      return result.result
+    } catch (error) {
+      return null
+    }
+  },
+)
+
+const initialState = tokens && tokens.refresh && tokens.access
+  ? { isLoggedIn: true }
+  : { isLoggedIn: false }
 
 const authorizationSlice = createSlice({
-  name: 'movies',
-  initialState: {
-    userID: null,
-    token: '',
-    user: {
-      username: '',
-      status: '',
-      email: '',
-      banner: '',
-      mainPhoto: '',
+  name: 'authorization',
+  initialState,
+  extraReducers: {
+    [setUser.fulfilled]: (state, action) => {
+      state.user = action.payload
     },
-  },
-  reducers: {
-    setLogin(state, action) {
-      const {
-        username,
-        password,
-      } = action.payload
-
-      const hashPassword = md5(password)
-      const userArray = usersList.filter((element) => (
-        element.username?.toLowerCase() === username?.toLowerCase()
-        && element.password === hashPassword.toString()
-      ))
-
-      if (userArray[0]) {
-        const user = userArray[0]
-
-        state.userID = user.userID
-
-        state.user.username = user.username
-        state.user.status = user.status
-        state.user.email = user.email
-        state.user.mainPhoto = user.mainPhoto
-        state.user.banner = user.banner
-
-        state.token = 'testToken'
-        localStorage.setItem('user', JSON.stringify(user))
-      }
+    [setUser.rejected]: (state) => {
+      state.isLoggedIn = true
+      state.user = null
     },
-    setRegistration(state, action) {
-      const {
-        username,
-        email,
-        password,
-      } = action.payload
-
-      const hashPassword = md5(password)
-      const user = {
-        userID: usersList.length + 1,
-        username,
-        email,
-        password: hashPassword,
-        status: 'Дуже умний статус',
-        banner,
-        mainPhoto,
-      }
-
-      usersList.push(user)
-
-      state.userID = user.userID
-
-      state.user.username = user.username
-      state.user.status = user.status
-      state.user.email = user.email
-      state.user.mainPhoto = user.mainPhoto
-      state.user.banner = user.banner
-
-      state.token = 'testToken'
-      localStorage.setItem('user', JSON.stringify(user))
+    [updateUser.fulfilled]: (state, action) => {
+      state.user = action.payload
     },
-    setUser(state, action) {
-      const user = action.payload
-
-      state.userID = user.userID
-      state.user = {
-        ...state.user,
-        ...user,
-      }
+    [setRegistration.fulfilled]: (state) => {
+      state.isLoggedIn = true
+    },
+    [setRegistration.rejected]: (state) => {
+      state.isLoggedIn = true
+      state.user = null
+    },
+    [setLogin.fulfilled]: (state) => {
+      state.isLoggedIn = true
+    },
+    [setLogin.rejected]: (state) => {
+      state.isLoggedIn = true
+      state.user = null
+    },
+    [setLogout.fulfilled]: (state) => {
+      state.isLoggedIn = false
+      state.user = null
     },
   },
 })
-
-export const { setLogin, setUser, setRegistration } = authorizationSlice.actions
-export const selectUserID = (state) => state.user.userID
 
 export default authorizationSlice.reducer

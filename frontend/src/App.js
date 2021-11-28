@@ -5,9 +5,8 @@ import {
   Route,
   Redirect,
 } from 'react-router-dom'
-import { useDispatch } from 'react-redux'
-import useToken from './useToken'
-import { setUser } from './store/authorizationSlice'
+import { useDispatch, useSelector } from 'react-redux'
+import { setUser, setLogout } from './store/authorizationSlice'
 
 import './assets/styles/App.scss'
 
@@ -25,20 +24,17 @@ import listIcon from './assets/images/icons/list.svg'
 
 const App = () => {
   const dispatch = useDispatch()
-  const { token, setToken } = useToken()
-  const loggedInUser = localStorage.getItem('user')
+  const isLoggedIn = useSelector((state) => state.authorization.isLoggedIn)
+  const user = useSelector((state) => state.authorization.user)
 
   useEffect(() => {
-    if (token) {
-      if (loggedInUser) {
-        const foundUser = JSON.parse(loggedInUser)
-        dispatch(setUser(foundUser))
-      }
+    if (isLoggedIn && !user) {
+      dispatch(setUser())
     }
-  }, [])
+  }, [isLoggedIn, user])
 
-  return !token || !loggedInUser
-    ? <LoginPage setToken={setToken} />
+  return !isLoggedIn || !user
+    ? <LoginPage />
     : (
       <Router>
         <div className="App">
@@ -64,9 +60,7 @@ const App = () => {
             <div className="App-menu-footer">
               <button
                 type="button"
-                onClick={() => {
-                  setToken()
-                }}
+                onClick={() => { dispatch(setLogout()) }}
               >
                 Вихід
               </button>
