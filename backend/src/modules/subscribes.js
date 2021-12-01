@@ -49,8 +49,10 @@ export default (router) => {
           return res.json({ errors })
         }
 
-        const result = await Subscribes.findOne({ userID })
+        await Subscribes.findOne({ userID })
           .updateOne({ $push: { list: { movieID } } })
+
+        const result = await Subscribes.findOne({ userID })
         return res.json({ result })
       } catch {
         errors.push({
@@ -120,7 +122,7 @@ export default (router) => {
 
       const { userID } = req.user
       const {
-        listName, movieID,
+        movieID,
       } = req.body
       try {
         const userExist = await Users.findById(userID)
@@ -136,7 +138,6 @@ export default (router) => {
 
         const itemExist = await Subscribes.findOne({
           userID,
-          listName,
           list: {
             $elemMatch: { movieID },
           },
@@ -151,8 +152,10 @@ export default (router) => {
           return res.json({ errors })
         }
 
-        const result = await Subscribes.findOne({ userID, listName })
+        await Subscribes.findOne({ userID })
           .updateOne({ $pull: { list: { movieID } } })
+
+        const result = await Subscribes.findOne({ userID })
         return res.json({ result })
       } catch {
         errors.push({

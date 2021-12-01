@@ -120,3 +120,58 @@
     }
   }
 }
+
+.ProfileDashboatd {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(500px, 1fr));
+
+  & > * {
+    padding: 30px;
+    display: grid;
+    grid-template-rows: auto 1fr;
+    gap: 30px;
+
+    height: calc(100vh - 60px);
+
+    &:first-of-type {
+      padding-left: 0;
+    }
+    &:last-of-type {
+      padding-right: 0;
+    }
+  }
+
+  &-profile {
+
+    .ProfileHead {
+      margin-top: -60px;
+      margin-left: -20px;
+      margin-right: -20px;
+    }
+
+    &-movieList {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-content: space-around;
+
+      overflow: hidden;
+      margin: 0 auto;
+      max-width: 600px;
+
+      .MovieCard {
+        width: 100%;
+        max-width: 27%;
+        min-width: 175px;
+
+        &:nth-child(n+7) {
+          display: none;
+        }
+      }
+    }
+  }
+
+  &-content {
+    border-left: 1px solid var(--contrast2-color);
+  }
+}

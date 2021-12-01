@@ -44,7 +44,7 @@ export default (router) => {
           return res.json({ errors })
         }
 
-        const result = await Users.findById(userID)
+        await Users.findById(userID)
           .updateOne({
             // eslint-disable-next-line no-underscore-dangle
             ...user._doc,
@@ -53,6 +53,8 @@ export default (router) => {
             mainPhoto,
             banner,
           })
+
+        const result = await Users.findById(userID)
         return res.json({ result })
       } catch {
         errors.push({

@@ -1,14 +1,14 @@
-import '../assets/styles/pages/HomePage.scss'
 import { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { getSubscribes, getPlannerList } from '../store/movieSlice'
+import { getSubscribes, getPlannerList } from '../../store/movieSlice'
+import '../../assets/styles/components/Profile.scss'
 
-import Calendar from '../components/calendar/Calendar'
-import ProfileHead from '../components/profile/ProfileHead'
-import MovieCard from '../components/movies/MovieCard'
-import MovieList from '../components/movies/MovieList'
+import Calendar from '../calendar/Calendar'
+import ProfileHead from './ProfileHead'
+import MovieCard from '../movies/MovieCard'
+import MovieList from '../movies/MovieList'
 
-const HomePage = () => {
+const ProfileDashboatd = () => {
   const dispatch = useDispatch()
 
   const movieList = useSelector((state) => state.movies.subscribes)
@@ -21,11 +21,11 @@ const HomePage = () => {
   }, [])
 
   return (
-    <div className="HomePage">
-      <div className="HomePage-profile">
+    <div className="ProfileDashboatd">
+      <div className="ProfileDashboatd-profile">
         <ProfileHead />
 
-        <div className="HomePage-profile-movieList">
+        <div className="ProfileDashboatd-profile-movieList">
           {movieList.map(
             ({ title, id, poster }) => (
               <MovieCard
@@ -39,7 +39,7 @@ const HomePage = () => {
         </div>
       </div>
 
-      <div className="HomePage-dashboard">
+      <div className="ProfileDashboatd-content">
         <Calendar data={schedule} />
 
         <MovieList name="В планах" movieList={planner.plan} />
@@ -48,4 +48,4 @@ const HomePage = () => {
   )
 }
 
-export default HomePage
+export default ProfileDashboatd

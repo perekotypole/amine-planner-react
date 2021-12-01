@@ -1,90 +1,55 @@
-import { useEffect } from 'react'
 import {
   BrowserRouter as Router,
   Switch,
   Route,
   Redirect,
 } from 'react-router-dom'
-import { useDispatch, useSelector } from 'react-redux'
-import { setUser, setLogout } from './store/authorizationSlice'
-
+import { useSelector } from 'react-redux'
 import './assets/styles/App.scss'
 
 import HomePage from './pages/HomePage'
-import CalendarPage from './pages/CalendarPage'
-import ListPage from './pages/ListPage'
 import LoginPage from './pages/LoginPage'
 
-import ProfileHead from './components/profile/ProfileHead'
-import MenuItem from './components/menu/MenuItem'
-
-import homeIcon from './assets/images/icons/home.svg'
-import calendarIcon from './assets/images/icons/calendar.svg'
-import listIcon from './assets/images/icons/list.svg'
-
 const App = () => {
-  const dispatch = useDispatch()
   const isLoggedIn = useSelector((state) => state.authorization.isLoggedIn)
-  const user = useSelector((state) => state.authorization.user)
+  const loadingUser = useSelector((state) => state.authorization.loadingUser)
 
-  useEffect(() => {
-    if (isLoggedIn && !user) {
-      dispatch(setUser())
-    }
-  }, [isLoggedIn, user])
+  if (loadingUser) {
+    return <div>Loading....</div>
+  }
 
-  return !isLoggedIn || !user
-    ? <LoginPage />
-    : (
-      <Router>
-        <div className="App">
-          <div className="App-menu">
-            <ProfileHead small />
-
-            <div className="App-menu-list">
-              {[
-                { icon: homeIcon, name: 'Особистий профіль', link: '/' },
-                { icon: calendarIcon, name: 'Календар виходу серій', link: '/calendar' },
-                { icon: listIcon, name: 'Список перегляду', link: '/listBoard' },
-              ].map(({ icon, name, link }) => (
-                <MenuItem
-                  exact
-                  key={name}
-                  icon={icon}
-                  name={name}
-                  link={link}
-                />
-              ))}
-            </div>
-
-            <div className="App-menu-footer">
-              <button
-                type="button"
-                onClick={() => { dispatch(setLogout()) }}
-              >
-                Вихід
-              </button>
-            </div>
-          </div>
-
-          <div className="App-content">
-            <Switch>
-              <Route exact path="/">
-                <HomePage />
-              </Route>
-              <Route path="/calendar">
-                <CalendarPage />
-              </Route>
-              <Route path="/listBoard">
-                <ListPage />
-              </Route>
-
-              <Route><Redirect to="/" /></Route>
-            </Switch>
-          </div>
-        </div>
-      </Router>
-    )
+  return (
+    <Router>
+      <Switch>
+        <Route
+          path="/login"
+          render={({ location }) => (!isLoggedIn ? (
+            <LoginPage />
+          ) : (
+            <Redirect
+              to={{
+                pathname: '/',
+                state: { from: location },
+              }}
+            />
+          ))}
+        />
+        <Route
+          path="/"
+          render={({ location }) => (isLoggedIn ? (
+            <HomePage />
+          ) : (
+            <Redirect
+              to={{
+                pathname: '/login',
+                state: { from: location },
+              }}
+            />
+          ))}
+        />
+      </Switch>
+    </Router>
+  )
 }
 
 export default App

@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { NavLink } from 'react-router-dom'
+import { NavLink, useHistory, useLocation } from 'react-router-dom'
 import '../../assets/styles/components/Login.scss'
 
 import { useDispatch, useStore } from 'react-redux'
@@ -17,6 +17,7 @@ const Login = () => {
 
   const [username, setUserName] = useState()
   const [password, setPassword] = useState()
+  const [terminateLogin, setTerminateLogin] = useState(true)
 
   const [errors, setErrors] = useState()
   const [loginError, setLoginError] = useState()
@@ -66,6 +67,12 @@ const Login = () => {
 
       if (!isLoggedIn) {
         setLoginError('Не вдалось ввійти в систему, перевірте дані')
+      } else {
+        const history = useHistory()
+        const location = useLocation()
+
+        const { from } = location.state || { from: { pathname: '/' } }
+        history.replace(from)
       }
     }
   }
@@ -100,7 +107,15 @@ const Login = () => {
         {loginError ? (<div className="error">{loginError}</div>) : ''}
 
         <div className="Login-submit">
-          <Checkbox name="не виходити" />
+          {terminateLogin.toString()}
+          <Checkbox
+            checked={!terminateLogin}
+            onChangeValue={(val) => {
+              console.log(val)
+              setTerminateLogin(!val)
+            }}
+            name="не виходити"
+          />
           <Button name="Увійти" type="submit" />
         </div>
       </form>

@@ -24,6 +24,6 @@ export default async (req, res, next) => {
 
     return next()
   } catch (e) {
-    return res.json({ accessTokenExpired: true })
+    return res.sendStatus(401).json({ accessTokenExpired: true })
   }
 }

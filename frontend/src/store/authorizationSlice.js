@@ -1,15 +1,19 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
+import Cookies from 'universal-cookie'
 
 import AuthService from '../services/auth.service'
 import UserService from '../services/user.service'
 
-const tokens = JSON.parse(localStorage.getItem('tokens'))
+const cookies = new Cookies()
+const tokens = cookies.get('tokens') || localStorage.getItem('tokens')
 
 export const setRegistration = createAsyncThunk(
   'authorization/setRegistration',
   async ({ username, email, password }) => {
     try {
       const response = await AuthService.register(username, email, password)
+      if (response.errors) return false
+
       return response.data
     } catch (error) {
       return null
@@ -21,6 +25,7 @@ export const setLogin = createAsyncThunk(
   async ({ username, password }) => {
     try {
       const response = await AuthService.login(username, password)
+      if (response.errors) return false
 
       return response.result
     } catch (error) {
@@ -37,12 +42,8 @@ export const setUser = createAsyncThunk(
   'authorization/setUser',
   async () => {
     try {
-      let response = await UserService.getUser()
-
-      if (response.accessTokenExpired) {
-        await AuthService.refresh()
-        response = await UserService.getUser()
-      }
+      const response = await UserService.getUser()
+      if (response.errors) return false
 
       return response.result
     } catch (error) {
@@ -55,21 +56,14 @@ export const updateUser = createAsyncThunk(
   'authorization/updateUser',
   async (user) => {
     try {
-      let response = null
-      let result = null
-      // eslint-disable-next-line no-extra-boolean-cast
-      if (!!user) {
-        response = await UserService.updateUser(user)
+      if (Object.keys(user).length) {
+        const response = await UserService.updateUser(user)
+        if (response.errors) return false
 
-        if (response.accessTokenExpired) {
-          await AuthService.refresh()
-          response = await UserService.updateUser(user)
-        }
-
-        result = await UserService.getUser()
+        return response.result
       }
 
-      return result.result
+      return false
     } catch (error) {
       return null
     }
@@ -82,35 +76,41 @@ const initialState = tokens && tokens.refresh && tokens.access
 
 const authorizationSlice = createSlice({
   name: 'authorization',
-  initialState,
+  initialState: {
+    loadingUser: false,
+    user: {},
+    ...initialState,
+  },
   extraReducers: {
     [setUser.fulfilled]: (state, action) => {
       state.user = action.payload
+      if (action.payload) state.loadingUser = false
+    },
+    [setUser.pending]: (state, action) => {
+      if (action.payload) state.user = action.payload
+      state.loadingUser = true
     },
     [setUser.rejected]: (state) => {
-      state.isLoggedIn = true
-      state.user = null
+      state.isLoggedIn = false
+      state.loadingUser = false
     },
     [updateUser.fulfilled]: (state, action) => {
-      state.user = action.payload
+      if (action.payload) state.user = action.payload
     },
-    [setRegistration.fulfilled]: (state) => {
-      state.isLoggedIn = true
+    [setRegistration.fulfilled]: (state, action) => {
+      if (action.payload) state.isLoggedIn = true
     },
     [setRegistration.rejected]: (state) => {
-      state.isLoggedIn = true
-      state.user = null
+      state.isLoggedIn = false
     },
-    [setLogin.fulfilled]: (state) => {
-      state.isLoggedIn = true
+    [setLogin.fulfilled]: (state, action) => {
+      if (action.payload) state.isLoggedIn = true
     },
     [setLogin.rejected]: (state) => {
-      state.isLoggedIn = true
-      state.user = null
+      state.isLoggedIn = false
     },
     [setLogout.fulfilled]: (state) => {
       state.isLoggedIn = false
-      state.user = null
     },
   },
 })

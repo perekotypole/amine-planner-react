@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { NavLink } from 'react-router-dom'
+import { NavLink, useHistory, useLocation } from 'react-router-dom'
 import '../../assets/styles/components/Login.scss'
 
 import { useDispatch, useStore } from 'react-redux'
@@ -83,6 +83,12 @@ const Registration = () => {
 
       if (!isLoggedIn) {
         setLoginError('Не вдалось ввійти в систему, перевірте дані')
+      } else {
+        const history = useHistory()
+        const location = useLocation()
+
+        const { from } = location.state || { from: { pathname: '/' } }
+        history.replace(from)
       }
     }
   }

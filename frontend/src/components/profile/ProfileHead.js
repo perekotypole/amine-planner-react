@@ -19,7 +19,7 @@ const ProfileHead = ({
   const user = useSelector((state) => state.authorization.user)
 
   useEffect(() => {
-    dispatch(setUser())
+    if (user && !Object.keys(user).length) dispatch(setUser())
   }, [])
 
   const {
@@ -27,19 +27,19 @@ const ProfileHead = ({
     status,
     mainPhoto,
     banner,
-  } = user
+  } = user || {}
 
   const [changedData, setChangedData] = useState(false)
-  const [editUsername, setEditUsername] = useState(username)
-  const [editStatus, setEditStatus] = useState(status)
-  const [editMainPhoto, setEditMainPhoto] = useState(mainPhoto)
-  const [editBanner, setEditBanner] = useState(banner)
+  const [editUsername, setEditUsername] = useState(username || '')
+  const [editStatus, setEditStatus] = useState(status || '')
+  const [editMainPhoto, setEditMainPhoto] = useState(mainPhoto || '')
+  const [editBanner, setEditBanner] = useState(banner || '')
 
   useEffect(() => {
-    setEditUsername(username)
-    setEditStatus(status)
-    setEditMainPhoto(mainPhoto)
-    setEditBanner(banner)
+    setEditUsername(username || '')
+    setEditStatus(status || '')
+    setEditMainPhoto(mainPhoto || '')
+    setEditBanner(banner || '')
   }, [username, status, mainPhoto, banner])
 
   const saveData = () => {
@@ -66,13 +66,15 @@ const ProfileHead = ({
     const reader = new FileReader()
     const imageBlob = mainPhotoRef.current.files[0]
 
-    reader.readAsDataURL(imageBlob)
-    reader.onloadend = () => {
-      setEditMainPhoto(reader.result)
-      mainPhotoPreviewRef.current.src = reader.result
-    }
+    if (imageBlob) {
+      reader.readAsDataURL(imageBlob)
+      reader.onloadend = () => {
+        setEditMainPhoto(reader.result)
+        mainPhotoPreviewRef.current.src = reader.result
+      }
 
-    setChangedData(true)
+      setChangedData(true)
+    }
   }
 
   const onClickBanner = () => {
@@ -82,13 +84,15 @@ const ProfileHead = ({
     const reader = new FileReader()
     const imageBlob = bannerRef.current.files[0]
 
-    reader.readAsDataURL(imageBlob)
-    reader.onloadend = () => {
-      setEditBanner(reader.result)
-      bannerPreviewRef.current.src = reader.result
-    }
+    if (imageBlob) {
+      reader.readAsDataURL(imageBlob)
+      reader.onloadend = () => {
+        setEditBanner(reader.result)
+        bannerPreviewRef.current.src = reader.result
+      }
 
-    setChangedData(true)
+      setChangedData(true)
+    }
   }
 
   return (

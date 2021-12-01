@@ -26,6 +26,7 @@ const requestGetById = async (id, episodes = false) => {
     const promisePoster = axios.get(`http://omdbapi.com/?apikey=${key}&i=${imdbID}`)
 
     poster = await Promise.resolve((await promisePoster).data.Poster)
+    if (!poster || poster === 'N/A') poster = element.result.image
   } else {
     poster = element.result.image
   }
@@ -63,6 +64,7 @@ export const getSubscribes = createAsyncThunk(
   'movies/getSubscribes',
   async () => {
     const subscribesData = await MoviesService.getSubscribes()
+    if (subscribesData.errors) return false
 
     if (subscribesData.result.list) {
       const subscribes = Promise.all(subscribesData.result.list
@@ -71,7 +73,7 @@ export const getSubscribes = createAsyncThunk(
       return subscribes
     }
 
-    return null
+    return false
   },
 )
 
@@ -104,9 +106,10 @@ export const getSchedule = createAsyncThunk(
 export const getPlannerList = createAsyncThunk(
   'movies/getPlannerList',
   async (list) => {
-    const { result: plannerData } = await MoviesService.getPlanner()
+    const plannerData = await MoviesService.getPlanner()
+    if (plannerData.errors) return false
 
-    const planner = await Promise.all(plannerData[list]
+    const planner = await Promise.all(plannerData.result[list]
       .map(({ _id, movieID, text }) => {
         if (text) {
           return ({
@@ -127,18 +130,20 @@ export const getSearch = createAsyncThunk(
   'movies/getSearch',
   async (query) => {
     const search = []
-    const subscribesData = await MoviesService.getSubscribes()
+    const { result: { list: subscribesData } } = await MoviesService.getSubscribes()
 
     if (query.length) {
       const searchResult = await requestSearch(query)
 
-      if (subscribesData.result.list) {
-        const searchPromise = Promise.all(searchResult.result.list
-          .map(({ movieID }) => requestGetById(movieID)))
-          .then((elements) => elements.map(
+      const searchPromise = Promise.all(searchResult
+        .map(({ id }) => requestGetById(id)))
+        .then((elements) => {
+          if (!subscribesData.length) return elements
+
+          return (elements.map(
             (item) => {
               let checked = false
-              subscribesData.forEach(({ id }) => { if (id === item.id) checked = true })
+              subscribesData.forEach(({ movieID }) => { if (movieID === item.id) checked = true })
 
               return {
                 checked,
@@ -146,13 +151,36 @@ export const getSearch = createAsyncThunk(
               }
             },
           ))
-        search.push(...(await searchPromise))
-      } else {
-        search.push(...(await searchResult))
-      }
+        })
+      search.push(...(await searchPromise))
     }
 
     return search
+  },
+)
+
+export const addSubscribe = createAsyncThunk(
+  'movies/addSubscribe',
+  async (id) => {
+    const itemExist = Promise(requestGetById(id))
+    let result = false
+
+    if (itemExist) {
+      result = await MoviesService.addSubscribe(id)
+    }
+
+    if (result.errors) return false
+
+    return { result }
+  },
+)
+
+export const removeSubscribe = createAsyncThunk(
+  'movies/removeSubscribe',
+  async (id) => {
+    const result = await MoviesService.addSubscribe(id) || false
+
+    return { result }
   },
 )
 
@@ -174,16 +202,16 @@ const movieSlice = createSlice({
   extraReducers: {
     [getSubscribes.fulfilled]: (state, action) => {
       state.subscribes = []
-      state.subscribes.push(...(action.payload))
+      if (action.payload) state.subscribes.push(...(action.payload))
     },
     [getSchedule.fulfilled]: (state, action) => {
       state.schedule = []
-      state.schedule.push(...(action.payload.flat()))
+      if (action.payload) state.schedule.push(...(action.payload.flat()))
     },
     [getSearch.fulfilled]: (state, action) => {
       state.searchStatus = ''
       state.search = []
-      state.search.push(...(action.payload))
+      if (action.payload) state.search.push(...(action.payload))
     },
     [getSearch.pending]: (state) => {
       state.searchStatus = 'Loading'
@@ -191,7 +219,7 @@ const movieSlice = createSlice({
     [getPlannerList.fulfilled]: (state, action) => {
       const [list, result] = action.payload
       state.planner[list] = []
-      state.planner[list].push(...result)
+      if (action.payload) state.planner[list].push(...result)
     },
   },
   reducers: {

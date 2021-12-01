@@ -55,6 +55,10 @@ const CalendarPage = () => {
     }
   }, [past, future])
 
+  const handleToggleSubscribes = () => {
+
+  }
+
   const displayMovieList = () => {
     if (searchStatus && !searchQuery.length) {
       return (
@@ -75,7 +79,8 @@ const CalendarPage = () => {
               name={title}
               background={poster}
               checked
-              changeable
+              changeable="subscribes"
+              onClick={handleToggleSubscribes}
             />
           ))
         ) : (

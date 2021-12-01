@@ -1,10 +1,7 @@
-import axios from 'axios'
-import authHeader from './auth-header'
-
-const API_URL = 'http://localhost:4000/'
+import axios from './auth-axios'
 
 const getUser = () => axios
-  .post(`${API_URL}user/get`, null, { headers: authHeader() })
+  .post('user/get')
   .then((response) => response.data)
 
 const updateUser = ({
@@ -13,12 +10,12 @@ const updateUser = ({
   mainPhoto,
   banner,
 }) => axios
-  .post(`${API_URL}user/update`, {
+  .post('user/update', {
     username,
     status,
     mainPhoto,
     banner,
-  }, { headers: authHeader() })
+  })
   .then((response) => response.data)
 
 const userService = {

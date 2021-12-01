@@ -1,20 +1,26 @@
-import axios from 'axios'
-import authHeader from './auth-header'
-
-const baseUrl = new URL(global.window.origin)
-const API_URL = `${baseUrl.protocol}//${baseUrl.hostname}:4000/`
+import axios from './auth-axios'
 
 const getSubscribes = () => axios
-  .post(`${API_URL}subscribes/get`, null, { headers: authHeader() })
+  .post('subscribes/get')
   .then((response) => response.data)
 
 const getPlanner = () => axios
-  .post(`${API_URL}planner/get`, null, { headers: authHeader() })
+  .post('planner/get')
+  .then((response) => response.data)
+
+const addSubscribe = (movieID) => axios
+  .post('subscribes/add', { movieID })
+  .then((response) => response.data)
+
+const removeSubscribe = (movieID) => axios
+  .post('subscribes/delete', { movieID })
   .then((response) => response.data)
 
 const moviesService = {
   getSubscribes,
   getPlanner,
+  addSubscribe,
+  removeSubscribe,
 }
 
 export default moviesService
