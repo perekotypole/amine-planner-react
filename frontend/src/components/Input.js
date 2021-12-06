@@ -1,17 +1,18 @@
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 /* eslint-disable jsx-a11y/click-events-have-key-events */
+import React from 'react'
 import PropTypes from 'prop-types'
 import '../assets/styles/App.scss'
 
 import SearchIcon from '../assets/images/icons/search.svg'
 
-const Input = ({
+const Input = React.forwardRef(({
   placeholder,
   type,
   onChangeValue,
   onSubmitValue,
   error,
-}) => {
+}, ref) => {
   const handleKeyPress = (event) => {
     if (event.key === 'Enter') onSubmitValue()
   }
@@ -24,6 +25,7 @@ const Input = ({
           placeholder={placeholder}
           onChange={onChangeValue}
           onKeyPress={handleKeyPress}
+          ref={ref}
         />
 
         {type && (
@@ -38,7 +40,7 @@ const Input = ({
       {error ? (<div className="Input-error">{error}</div>) : ''}
     </div>
   )
-}
+})
 
 Input.propTypes = {
   placeholder: PropTypes.string,

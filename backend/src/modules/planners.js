@@ -86,8 +86,94 @@ export default (router) => {
           return res.json({ errors })
         }
 
-        const result = await Planners.findOne({ userID, listName })
+        let existInOtherList = null
+        if (movieID) {
+          existInOtherList = (await Planners.findOne({
+            userID,
+            list: {
+              $elemMatch: { movieID },
+            },
+          }))?.listName
+
+          if (existInOtherList) {
+            await Planners.findOne({ userID, listName: existInOtherList })
+              .updateOne({ $pull: { list: { movieID } } })
+          }
+        }
+
+        await Planners.findOne({ userID, listName })
           .updateOne({ $push: { list: { movieID, title: movieTitle } } })
+
+        const data = await Planners.findOne({ userID, listName })
+        const result = {}
+        result[listName] = data.list
+
+        return res.json({ addTo: listName, removeFrom: existInOtherList })
+      } catch {
+        errors.push({
+          msg: 'Something wrong',
+          param: '',
+          location: 'body',
+        })
+
+        return res.json({ errors })
+      }
+    },
+  )
+
+  router.post(
+    '/planner/changeList',
+    checkSchema({
+      listName: {
+        in: 'body',
+        errorMessage: 'listName is not correct',
+        notEmpty: true,
+      },
+      list: {
+        in: 'body',
+      },
+    }),
+    async (req, res) => {
+      const errors = []
+      errors.push(...validationResult(req).array())
+
+      if (errors.length) {
+        return res.json({ errors })
+      }
+
+      const { userID } = req.user
+      const {
+        listName, list,
+      } = req.body
+      try {
+        const userExist = await Users.findById(userID)
+        if (!userExist) {
+          errors.push({
+            msg: 'User doesn`t exist',
+            param: 'userID',
+            location: 'body',
+          })
+
+          return res.json({ errors })
+        }
+
+        const listExist = await Planners.findOne({ userID, listName })
+        if (!listExist) {
+          errors.push({
+            msg: 'listName doesn`t exist',
+            param: 'userID',
+            location: 'body',
+          })
+
+          return res.json({ errors })
+        }
+
+        await Planners.findOne({ userID, listName })
+          .updateOne({ list })
+
+        const data = await Planners.find({ userID })
+        const result = data.reduce((o, cur) => ({ ...o, [cur.listName]: cur.list }), {})
+
         return res.json({ result })
       } catch {
         errors.push({

@@ -5,13 +5,15 @@ import AuthService from '../services/auth.service'
 import UserService from '../services/user.service'
 
 const cookies = new Cookies()
-const tokens = cookies.get('tokens') || localStorage.getItem('tokens')
+const tokens = cookies.get('tokens') || JSON.parse(localStorage.getItem('tokens'))
 
 export const setRegistration = createAsyncThunk(
   'authorization/setRegistration',
-  async ({ username, email, password }) => {
+  async ({
+    username, email, password, terminateLogin,
+  }) => {
     try {
-      const response = await AuthService.register(username, email, password)
+      const response = await AuthService.register(username, email, password, terminateLogin)
       if (response.errors) return false
 
       return response.data
@@ -22,9 +24,9 @@ export const setRegistration = createAsyncThunk(
 )
 export const setLogin = createAsyncThunk(
   'authorization/setLogin',
-  async ({ username, password }) => {
+  async ({ username, password, terminateLogin }) => {
     try {
-      const response = await AuthService.login(username, password)
+      const response = await AuthService.login(username, password, terminateLogin)
       if (response.errors) return false
 
       return response.result
@@ -93,6 +95,7 @@ const authorizationSlice = createSlice({
     [setUser.rejected]: (state) => {
       state.isLoggedIn = false
       state.loadingUser = false
+      state.user = {}
     },
     [updateUser.fulfilled]: (state, action) => {
       if (action.payload) state.user = action.payload
@@ -102,15 +105,18 @@ const authorizationSlice = createSlice({
     },
     [setRegistration.rejected]: (state) => {
       state.isLoggedIn = false
+      state.user = {}
     },
     [setLogin.fulfilled]: (state, action) => {
       if (action.payload) state.isLoggedIn = true
     },
     [setLogin.rejected]: (state) => {
       state.isLoggedIn = false
+      state.user = {}
     },
     [setLogout.fulfilled]: (state) => {
       state.isLoggedIn = false
+      state.user = {}
     },
   },
 })

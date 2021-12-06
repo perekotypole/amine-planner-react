@@ -1,12 +1,15 @@
-import { useState } from 'react'
+import { useRef } from 'react'
 import PropTypes from 'prop-types'
 import '../assets/styles/App.scss'
 
 const Checkbox = ({
   name, checked, onChange,
 }) => {
-  const [localChecked, setChecked] = useState(checked)
-  const handleClick = () => setChecked(!checked)
+  const checkboxRef = useRef()
+
+  const handleClick = () => {
+    onChange(checkboxRef.current.checked)
+  }
 
   return (
     <label className="Checkbox">
@@ -14,8 +17,8 @@ const Checkbox = ({
       <input
         type="checkbox"
         defaultChecked={checked}
+        ref={checkboxRef}
         onClick={handleClick}
-        onChange={onChange(localChecked)}
       />
       <span className="checkmark" />
     </label>

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { getSubscribes, getSearch } from '../store/movieSlice'
+import { getSubscribes, getSearch, addItemToPlanner } from '../store/movieSlice'
 import '../assets/styles/pages/ListPage.scss'
 
 import MoviesBoard from '../components/movies/MoviesBoard'
@@ -42,12 +42,18 @@ const ListPage = () => {
   const searchList = useSelector((state) => state.movies.search)
   const searchStatus = useSelector((state) => state.movies.searchStatus)
 
-  const [typeList, setTypeList] = useState('plans')
+  const [typeList, setTypeList] = useState('plan')
   const [searchWindow, setSearchWindow] = useState('hidden')
 
   useEffect(() => {
     dispatch(getSubscribes())
+    dispatch(getSearch())
   }, [])
+
+  const addToPlanner = (id) => {
+    dispatch(addItemToPlanner({ list: typeList, id }))
+    setSearchWindow('hidden')
+  }
 
   const displayMovieList = () => {
     if (searchStatus && !searchQuery.length) {
@@ -69,7 +75,8 @@ const ListPage = () => {
               name={title}
               background={poster}
               checked
-              changeable
+              changeable="planner"
+              onClick={() => addToPlanner(id)}
             />
           ))
         ) : (
@@ -81,7 +88,8 @@ const ListPage = () => {
               name={title}
               background={poster}
               checked={checked}
-              changeable
+              changeable="planner"
+              onClick={() => addToPlanner(id)}
             />
           ))
         )}

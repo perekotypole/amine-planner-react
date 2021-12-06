@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import * as dateFns from 'date-fns'
 import locale from 'date-fns/locale/uk'
 import PropTypes from 'prop-types'
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { getSchedule } from '../../store/movieSlice'
 
 import '../../assets/styles/components/Calendar.scss'
@@ -11,9 +11,11 @@ import DayItem from './DayItem'
 
 const Calendar = ({ data }) => {
   const dispatch = useDispatch()
+  const subscribes = useSelector((state) => state.movies.subscribes)
+
   useEffect(() => {
     dispatch(getSchedule())
-  }, [])
+  }, [subscribes])
 
   const [currentMonth, setCurrentMonth] = useState(new Date())
   const schedule = data

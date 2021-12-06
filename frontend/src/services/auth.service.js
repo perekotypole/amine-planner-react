@@ -15,7 +15,7 @@ const register = (username, email, password, term = true) => axios
       const tokens = JSON.stringify(response.data.result)
 
       if (term) cookies.set('tokens', tokens)
-      else localStorage.set('tokens', tokens)
+      else localStorage.setItem('tokens', tokens)
     }
 
     return response.data
@@ -31,22 +31,25 @@ const login = (username, password, term = true) => axios
       const tokens = JSON.stringify(response.data.result)
 
       if (term) cookies.set('tokens', tokens)
-      else localStorage.set('tokens', tokens)
+      else localStorage.setItem('tokens', tokens)
     }
 
     return response.data
   })
 
-const refresh = (term = true) => axios
+const refresh = () => axios
   .post(`${API_URL}refresh`, {
-    token: cookies.get('tokens').refresh || localStorage.getItem('tokens').refresh,
+    token: cookies.get('tokens')?.refresh || JSON.parse(localStorage.getItem('tokens')).refresh,
   })
   .then((response) => {
     if (response.data.result.access) {
       const tokens = JSON.stringify(response.data.result)
 
+      let term = true
+      if (localStorage.getItem('tokens')) term = false
+
       if (term) cookies.set('tokens', tokens)
-      else localStorage.set('tokens', tokens)
+      else localStorage.setItem('tokens', tokens)
     }
 
     return response.data

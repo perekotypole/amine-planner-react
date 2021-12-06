@@ -1,6 +1,8 @@
 import React, { useRef, useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { getSubscribes, getSearch } from '../store/movieSlice'
+import {
+  getSubscribes, getSearch, removeSubscribe, addSubscribe,
+} from '../store/movieSlice'
 import '../assets/styles/pages/CalendarPage.scss'
 
 import Calendar from '../components/calendar/Calendar'
@@ -10,6 +12,7 @@ import Input from '../components/Input'
 
 const CalendarPage = () => {
   const myRef = useRef(null)
+  const searchRef = useRef()
 
   const dispatch = useDispatch()
   let searchQuery = ''
@@ -21,6 +24,7 @@ const CalendarPage = () => {
 
   useEffect(() => {
     dispatch(getSubscribes())
+    dispatch(getSearch())
   }, [])
 
   const [past, setPast] = useState([])
@@ -55,8 +59,13 @@ const CalendarPage = () => {
     }
   }, [past, future])
 
-  const handleToggleSubscribes = () => {
+  const handleToggleSubscribes = (id, inSubcribes) => {
+    if (inSubcribes) dispatch(removeSubscribe(id))
+    else dispatch(addSubscribe(id))
 
+    // console.log(searchRef)
+    searchRef.current.value = ''
+    dispatch(getSearch())
   }
 
   const displayMovieList = () => {
@@ -80,7 +89,7 @@ const CalendarPage = () => {
               background={poster}
               checked
               changeable="subscribes"
-              onClick={handleToggleSubscribes}
+              onClick={() => handleToggleSubscribes(id, true)}
             />
           ))
         ) : (
@@ -92,7 +101,8 @@ const CalendarPage = () => {
               name={title}
               background={poster}
               checked={checked}
-              changeable
+              changeable="subscribes"
+              onClick={() => handleToggleSubscribes(id, checked)}
             />
           ))
         )}
@@ -136,6 +146,7 @@ const CalendarPage = () => {
       <div className="CalendarPage-subscribes">
         <Input
           type="search"
+          ref={searchRef}
           onChangeValue={(e) => {
             searchQuery = e.target.value
             if (!searchQuery.length) dispatch(getSearch(searchQuery))

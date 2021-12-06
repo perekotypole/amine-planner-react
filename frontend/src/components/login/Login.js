@@ -62,7 +62,7 @@ const Login = () => {
     e.preventDefault()
 
     if (validateForm()) {
-      dispatch(setLogin({ username, password }))
+      dispatch(setLogin({ username, password, terminateLogin }))
       const { isLoggedIn } = store.getState().authorization
 
       if (!isLoggedIn) {
@@ -107,13 +107,9 @@ const Login = () => {
         {loginError ? (<div className="error">{loginError}</div>) : ''}
 
         <div className="Login-submit">
-          {terminateLogin.toString()}
           <Checkbox
             checked={!terminateLogin}
-            onChangeValue={(val) => {
-              console.log(val)
-              setTerminateLogin(!val)
-            }}
+            onChange={(val) => setTerminateLogin(!val)}
             name="не виходити"
           />
           <Button name="Увійти" type="submit" />

@@ -7,8 +7,8 @@ import { updatePlannerData, getPlannerList } from '../../store/movieSlice'
 import MovieListDND from './MovieListDND'
 
 const ListPage = () => {
-  const list = useSelector((state) => state.movies.planner)
   const dispatch = useDispatch()
+  const list = useSelector((state) => state.movies.planner)
 
   useEffect(() => {
     dispatch(getPlannerList('plan'))

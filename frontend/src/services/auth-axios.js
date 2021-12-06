@@ -13,16 +13,16 @@ const instance = axios.create({
 
 instance.interceptors.request.use(
   (config) => {
-    const tokens = cookies.get('tokens') || localStorage.getItem('tokens')
+    const tokens = cookies.get('tokens') || JSON.parse(localStorage.getItem('tokens'))
 
     if (tokens && tokens.access) {
       config.headers.Authorization = `Bearer ${tokens.access}`
     }
     return config
   },
-  (error) => {
+  (error) => (
     Promise.reject(error)
-  },
+  ),
 )
 
 instance.interceptors.response.use(
@@ -35,8 +35,11 @@ instance.interceptors.response.use(
 
       try {
         const tokens = await AuthService.refresh()
+        if (tokens.result) {
+          return instance(originalConfig)
+        }
 
-        if (tokens.result) return instance(originalConfig)
+        Promise.reject(err)
       } catch (_error) {
         return Promise.reject(_error)
       }

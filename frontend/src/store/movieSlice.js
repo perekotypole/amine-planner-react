@@ -107,6 +107,7 @@ export const getPlannerList = createAsyncThunk(
   'movies/getPlannerList',
   async (list) => {
     const plannerData = await MoviesService.getPlanner()
+    console.log(plannerData)
     if (plannerData.errors) return false
 
     const planner = await Promise.all(plannerData.result[list]
@@ -130,10 +131,10 @@ export const getSearch = createAsyncThunk(
   'movies/getSearch',
   async (query) => {
     const search = []
-    const { result: { list: subscribesData } } = await MoviesService.getSubscribes()
 
-    if (query.length) {
+    if (query) {
       const searchResult = await requestSearch(query)
+      const { result: { list: subscribesData } } = await MoviesService.getSubscribes()
 
       const searchPromise = Promise.all(searchResult
         .map(({ id }) => requestGetById(id)))
@@ -162,25 +163,56 @@ export const getSearch = createAsyncThunk(
 export const addSubscribe = createAsyncThunk(
   'movies/addSubscribe',
   async (id) => {
-    const itemExist = Promise(requestGetById(id))
+    const itemExist = await requestGetById(id)
     let result = false
 
     if (itemExist) {
       result = await MoviesService.addSubscribe(id)
+      if (result.errors) return false
+
+      if (result.result.list) {
+        const subscribes = Promise.all(result.result.list
+          .map(({ movieID }) => requestGetById(movieID)))
+          .then((elements) => elements)
+        return subscribes
+      }
     }
 
-    if (result.errors) return false
-
-    return { result }
+    return false
   },
 )
 
 export const removeSubscribe = createAsyncThunk(
   'movies/removeSubscribe',
   async (id) => {
-    const result = await MoviesService.addSubscribe(id) || false
+    const result = await MoviesService.removeSubscribe(id)
+    if (result.errors) return false
 
-    return { result }
+    if (Array.isArray(result.result.list)) {
+      const subscribes = Promise.all(result.result.list
+        .map(({ movieID }) => requestGetById(movieID)))
+        .then((elements) => elements)
+      return subscribes
+    }
+
+    return false
+  },
+)
+
+export const addItemToPlanner = createAsyncThunk(
+  'movies/addItemToPlanner',
+  async ({ list, id }) => {
+    const itemExist = await requestGetById(id)
+    let result = false
+
+    if (itemExist) {
+      result = await MoviesService.addToPlanner(list, id)
+      if (result.errors) return false
+
+      return result
+    }
+
+    return false
   },
 )
 
@@ -198,6 +230,7 @@ const movieSlice = createSlice({
       plan: [],
       watching: [],
     },
+    plannerChanged: false,
   },
   extraReducers: {
     [getSubscribes.fulfilled]: (state, action) => {
@@ -219,7 +252,29 @@ const movieSlice = createSlice({
     [getPlannerList.fulfilled]: (state, action) => {
       const [list, result] = action.payload
       state.planner[list] = []
-      if (action.payload) state.planner[list].push(...result)
+      if (action.payload) {
+        state.planner[list].push(...result)
+        state.plannerChanged = false
+      }
+    },
+    [removeSubscribe.fulfilled]: (state, action) => {
+      if (action.payload.length) {
+        state.subscribes = []
+        state.subscribes.push(...(action.payload))
+      }
+    },
+    [addSubscribe.fulfilled]: (state, action) => {
+      if (action.payload.length) {
+        state.subscribes = []
+        state.subscribes.push(...(action.payload))
+      }
+    },
+    [addItemToPlanner.fulfilled]: (state, action) => {
+      if (action.payload) {
+        state.plannerChanged = true
+        getPlannerList(action.payload.addTo)
+        if (action.payload.removeFrom) getPlannerList(action.payload.removeFrom)
+      }
     },
   },
   reducers: {

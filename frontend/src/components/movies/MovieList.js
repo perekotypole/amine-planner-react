@@ -45,10 +45,11 @@ const MovieList = ({
 MovieList.defaultProps = {
   movieList: [],
   empty: false,
+  name: '',
 }
 
 MovieList.propTypes = {
-  name: PropTypes.string.isRequired,
+  name: PropTypes.string,
   movieList: PropTypes.arrayOf(PropTypes.object),
   empty: PropTypes.bool,
 }

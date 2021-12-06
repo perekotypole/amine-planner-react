@@ -16,11 +16,16 @@ const removeSubscribe = (movieID) => axios
   .post('subscribes/delete', { movieID })
   .then((response) => response.data)
 
+const addToPlanner = (listName, movieID, movieTitle) => axios
+  .post('planner/add', { listName, movieID, movieTitle })
+  .then((response) => response.data)
+
 const moviesService = {
   getSubscribes,
   getPlanner,
   addSubscribe,
   removeSubscribe,
+  addToPlanner,
 }
 
 export default moviesService
