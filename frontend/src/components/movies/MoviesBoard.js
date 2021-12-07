@@ -2,13 +2,14 @@ import { useEffect } from 'react'
 import '../../assets/styles/components/Movies.scss'
 import { DragDropContext } from 'react-beautiful-dnd'
 import { useSelector, useDispatch } from 'react-redux'
-import { updatePlannerData, getPlannerList } from '../../store/movieSlice'
+import { updatePlannerData, getPlannerList, chengePlannerList } from '../../store/movieSlice'
 
 import MovieListDND from './MovieListDND'
 
 const ListPage = () => {
   const dispatch = useDispatch()
   const list = useSelector((state) => state.movies.planner)
+  const plannerChanged = useSelector((state) => state.movies.plannerChanged)
 
   useEffect(() => {
     dispatch(getPlannerList('plan'))
@@ -30,6 +31,23 @@ const ListPage = () => {
       addedElementIndex: result.destination.index,
     }))
   }
+
+  useEffect(() => {
+    if (plannerChanged.value) {
+      dispatch(
+        chengePlannerList({
+          listName: plannerChanged.sourceList,
+          list: list[plannerChanged.sourceList],
+        }),
+      )
+      dispatch(
+        chengePlannerList({
+          listName: plannerChanged.destinationList,
+          list: list[plannerChanged.destinationList],
+        }),
+      )
+    }
+  }, [plannerChanged])
 
   return (
     <div className="MoviesBoard">

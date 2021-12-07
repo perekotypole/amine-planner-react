@@ -122,7 +122,7 @@ export default (router) => {
   )
 
   router.post(
-    '/planner/changeList',
+    '/planner/setList',
     checkSchema({
       listName: {
         in: 'body',
@@ -135,7 +135,6 @@ export default (router) => {
     }),
     async (req, res) => {
       const errors = []
-      errors.push(...validationResult(req).array())
 
       if (errors.length) {
         return res.json({ errors })
@@ -171,8 +170,9 @@ export default (router) => {
         await Planners.findOne({ userID, listName })
           .updateOne({ list })
 
-        const data = await Planners.find({ userID })
-        const result = data.reduce((o, cur) => ({ ...o, [cur.listName]: cur.list }), {})
+        const data = await Planners.findOne({ userID, listName })
+        const result = {}
+        result[listName] = data.list
 
         return res.json({ result })
       } catch {
@@ -340,7 +340,6 @@ export default (router) => {
         } else {
           filter = { movieID }
         }
-        console.log(filter)
 
         const itemExist = await Planners.findOne({
           userID,

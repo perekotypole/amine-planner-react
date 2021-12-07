@@ -60,6 +60,26 @@ const requestSearch = async (query) => {
   return result
 }
 
+const getPlannerListFunction = async (list) => {
+  const plannerData = await MoviesService.getPlanner()
+  if (plannerData.errors) return false
+
+  const planner = await Promise.all(plannerData.result[list]
+    .map(({ _id, movieID, text }) => {
+      if (text) {
+        return ({
+          id: movieID || _id,
+          title: text,
+        })
+      }
+
+      return requestGetById(movieID)
+    }))
+    .then((elements) => elements)
+
+  return [list, planner]
+}
+
 export const getSubscribes = createAsyncThunk(
   'movies/getSubscribes',
   async () => {
@@ -106,24 +126,8 @@ export const getSchedule = createAsyncThunk(
 export const getPlannerList = createAsyncThunk(
   'movies/getPlannerList',
   async (list) => {
-    const plannerData = await MoviesService.getPlanner()
-    console.log(plannerData)
-    if (plannerData.errors) return false
-
-    const planner = await Promise.all(plannerData.result[list]
-      .map(({ _id, movieID, text }) => {
-        if (text) {
-          return ({
-            id: movieID || _id,
-            title: text,
-          })
-        }
-
-        return requestGetById(movieID)
-      }))
-      .then((elements) => elements)
-
-    return [list, planner]
+    const result = await getPlannerListFunction(list)
+    return result
   },
 )
 
@@ -206,13 +210,59 @@ export const addItemToPlanner = createAsyncThunk(
     let result = false
 
     if (itemExist) {
-      result = await MoviesService.addToPlanner(list, id)
-      if (result.errors) return false
+      const data = await MoviesService.addToPlanner(list, id)
+      if (data.errors) return false
+
+      result = []
+      result.push(await getPlannerListFunction(data.addTo))
+      if (data.removeFrom) {
+        result.push(await getPlannerListFunction(data.removeFrom))
+      }
+
+      // if (result[data.addTo].errors || result[data.removeFrom].errors) return false
 
       return result
     }
 
     return false
+  },
+)
+
+export const chengePlannerList = createAsyncThunk(
+  'movies/chengePlannerList',
+  async ({ listName, list }) => {
+    const formatedList = list.map((item) => ({
+      movieID: item.id,
+    }))
+
+    const plannerData = await MoviesService.chengePlannerList(listName, formatedList)
+    if (plannerData.errors) return false
+
+    const planner = await Promise.all(plannerData.result[listName]
+      .map(({ _id, movieID, text }) => {
+        if (text) {
+          return ({
+            id: movieID || _id,
+            title: text,
+          })
+        }
+
+        return requestGetById(movieID)
+      }))
+      .then((elements) => elements)
+
+    return [list, planner]
+  },
+)
+
+export const removePlannerItem = createAsyncThunk(
+  'movies/removePlannerItem',
+  async ({ listName, movieID }) => {
+    const result = await MoviesService.deletePlannerList(listName, movieID)
+    if (result.errors) return false
+
+    const list = await getPlannerListFunction(listName)
+    return list
   },
 )
 
@@ -230,7 +280,11 @@ const movieSlice = createSlice({
       plan: [],
       watching: [],
     },
-    plannerChanged: false,
+    plannerChanged: {
+      value: false,
+      sourceList: null,
+      destinationList: null,
+    },
   },
   extraReducers: {
     [getSubscribes.fulfilled]: (state, action) => {
@@ -251,10 +305,18 @@ const movieSlice = createSlice({
     },
     [getPlannerList.fulfilled]: (state, action) => {
       const [list, result] = action.payload
-      state.planner[list] = []
       if (action.payload) {
+        state.planner[list] = []
         state.planner[list].push(...result)
-        state.plannerChanged = false
+      }
+    },
+    [chengePlannerList.fulfilled]: (state, action) => {
+      if (action.payload) {
+        const [list, result] = action.payload
+        state.planner[list] = []
+        state.planner[list].push(...result)
+
+        state.plannerChanged.value = false
       }
     },
     [removeSubscribe.fulfilled]: (state, action) => {
@@ -270,10 +332,18 @@ const movieSlice = createSlice({
       }
     },
     [addItemToPlanner.fulfilled]: (state, action) => {
-      if (action.payload) {
-        state.plannerChanged = true
-        getPlannerList(action.payload.addTo)
-        if (action.payload.removeFrom) getPlannerList(action.payload.removeFrom)
+      if (action.payload.length) {
+        action.payload.forEach(([name, list]) => {
+          state.planner[name] = []
+          state.planner[name].push(...list)
+        })
+      }
+    },
+    [removePlannerItem.fulfilled]: (state, action) => {
+      if (action.payload.length) {
+        const [name, list] = action.payload
+        state.planner[name] = []
+        state.planner[name].push(...list)
       }
     },
   },
@@ -290,6 +360,10 @@ const movieSlice = createSlice({
 
       state.planner[sourceList].splice(removedElementIndex, 1) // remove
       state.planner[destinationList].splice(addedElementIndex, 0, element) // add
+
+      state.plannerChanged.value = true
+      state.plannerChanged.sourceList = sourceList
+      state.plannerChanged.destinationList = destinationList
     },
   },
 })
